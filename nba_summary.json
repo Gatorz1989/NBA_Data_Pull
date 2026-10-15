@@ -1,0 +1,125 @@
+{
+  "generated": "2026-10-15T22:08:42.454Z",
+  "format": "nba-summary-1",
+  "model": "1.3",
+  "counts": {
+    "propsGraded": 0,
+    "picksGraded": 0,
+    "gamesGraded": 0
+  },
+  "through": null,
+  "since": null,
+  "record": {
+    "overall": {
+      "w": 0,
+      "l": 0,
+      "p": 0,
+      "u": 0,
+      "n": 0
+    },
+    "byTier": {},
+    "byStat": {},
+    "bySide": {},
+    "byEdge": {},
+    "byBook": {},
+    "last30": {
+      "w": 0,
+      "l": 0,
+      "p": 0,
+      "u": 0,
+      "n": 0
+    },
+    "games": {
+      "ats": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "u": 0,
+        "n": 0
+      },
+      "ou": {
+        "w": 0,
+        "l": 0,
+        "p": 0,
+        "u": 0,
+        "n": 0
+      }
+    }
+  },
+  "daily": [],
+  "reliability": [],
+  "gameModel": {
+    "n": 0,
+    "maeMargin": null,
+    "maeMarginRaw": null,
+    "maeTotal": null,
+    "maeTotalRaw": null,
+    "mktMaeMargin": 0,
+    "mktMaeTotal": 0
+  },
+  "clv": {
+    "props": {
+      "n": 0,
+      "pctBeat": null,
+      "pctSame": null,
+      "avg": null
+    },
+    "games": {
+      "n": 0,
+      "pctBeat": null,
+      "pctSame": null,
+      "avg": null
+    }
+  },
+  "epochs": [],
+  "flags": [],
+  "calibration": {
+    "version": 0,
+    "updated": null,
+    "current": {
+      "W_MARKET_SPREAD": 0.5,
+      "W_MARKET_TOTAL": 0.6,
+      "PLATT_A": 1,
+      "PLATT_B": 0,
+      "PROP_W_MARKET": 0.35,
+      "SHRINK": {
+        "pts": 0.75,
+        "reb": 0.75,
+        "ast": 0.75,
+        "pra": 0.75,
+        "fg3m": 0.7,
+        "stl": 0.6,
+        "blk": 0.6
+      },
+      "MARGIN_SD": 12,
+      "TOTAL_SD": 18
+    },
+    "defaults": {
+      "W_MARKET_SPREAD": 0.5,
+      "W_MARKET_TOTAL": 0.6,
+      "PLATT_A": 1,
+      "PLATT_B": 0,
+      "PROP_W_MARKET": 0.35,
+      "SHRINK": {
+        "pts": 0.75,
+        "reb": 0.75,
+        "ast": 0.75,
+        "pra": 0.75,
+        "fg3m": 0.7,
+        "stl": 0.6,
+        "blk": 0.6
+      },
+      "MARGIN_SD": 12,
+      "TOTAL_SD": 18
+    },
+    "fit": {
+      "updated": "2026-10-15T22:08:42.454Z",
+      "n": {},
+      "notes": [
+        "Only 0 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
+      ]
+    }
+  },
+  "changeLog": [],
+  "files": []
+}

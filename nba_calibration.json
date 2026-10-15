@@ -1,0 +1,88 @@
+{
+  "format": "nba-calibration-1",
+  "version": 0,
+  "updated": null,
+  "cal": {
+    "W_MARKET_SPREAD": 0.5,
+    "W_MARKET_TOTAL": 0.6,
+    "PLATT_A": 1,
+    "PLATT_B": 0,
+    "PROP_W_MARKET": 0.35,
+    "SHRINK": {
+      "pts": 0.75,
+      "reb": 0.75,
+      "ast": 0.75,
+      "pra": 0.75,
+      "fg3m": 0.7,
+      "stl": 0.6,
+      "blk": 0.6
+    },
+    "MARGIN_SD": 12,
+    "TOTAL_SD": 18
+  },
+  "fit": {
+    "updated": "2026-10-15T22:08:42.454Z",
+    "n": {},
+    "notes": [
+      "Only 0 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
+    ]
+  },
+  "limits": {
+    "W_MARKET_SPREAD": {
+      "min": 0.2,
+      "max": 0.85,
+      "step": 0.05,
+      "minN": 60,
+      "tau": 0.15
+    },
+    "W_MARKET_TOTAL": {
+      "min": 0.2,
+      "max": 0.85,
+      "step": 0.05,
+      "minN": 60,
+      "tau": 0.15
+    },
+    "PROP_W_MARKET": {
+      "min": 0.1,
+      "max": 0.7,
+      "step": 0.04,
+      "minN": 200,
+      "tau": 0.12
+    },
+    "SHRINK": {
+      "min": 0.25,
+      "max": 1,
+      "step": 0.05,
+      "minN": 150,
+      "tau": 0.2
+    },
+    "PLATT_A": {
+      "min": 0.6,
+      "max": 1.4,
+      "step": 0.04,
+      "minN": 150,
+      "tau": 0.15
+    },
+    "PLATT_B": {
+      "min": -0.4,
+      "max": 0.4,
+      "step": 0.03,
+      "minN": 150,
+      "tau": 0.15
+    },
+    "MARGIN_SD": {
+      "min": 9,
+      "max": 17,
+      "step": 0.4,
+      "minN": 60,
+      "tau": 1.5
+    },
+    "TOTAL_SD": {
+      "min": 14,
+      "max": 24,
+      "step": 0.5,
+      "minN": 60,
+      "tau": 2
+    }
+  }
+}
