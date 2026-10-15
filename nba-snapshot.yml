@@ -1,0 +1,45 @@
+name: NBA pre-tip line snapshots
+
+on:
+  schedule:
+    - cron: '*/15 16-23,0-4 * * *'    # noon to midnight Eastern; exits instantly (no API call) when no game is near tip
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nba-state
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+
+      - name: Restore private state
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: nba-state-${{ github.run_id }}
+          restore-keys: nba-state-
+
+      - name: Snapshot lines
+        id: snap
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python nba_snapshot.py
+
+      - name: Save private state
+        if: steps.snap.outputs.changed == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: nba-state-${{ github.run_id }}
