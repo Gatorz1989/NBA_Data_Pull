@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-15T22:53:39.838Z",
+  "generated": "2026-10-15T23:14:56.275Z",
   "format": "nba-summary-1",
   "model": "1.3",
   "counts": {
@@ -113,7 +113,7 @@
       "TOTAL_SD": 18
     },
     "fit": {
-      "updated": "2026-10-15T22:53:39.838Z",
+      "updated": "2026-10-15T23:14:56.275Z",
       "n": {},
       "notes": [
         "Only 0 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
