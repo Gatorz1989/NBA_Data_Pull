@@ -3803,6 +3803,7 @@ still expects them to exist. -->
         NOTE: all five books come through The Odds API. The daily GitHub job reads the ODDS_API_KEY secret in your repo; the key saved here is only stored in this browser.
       </div>
       <div id="key-status" style="font-family:var(--mono);font-size:10px;margin-top:8px"></div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)"><div class="flex gap8" style="align-items:center;flex-wrap:wrap"><button class="btn btn-gold btn-sm" onclick="nbaFetchOdds()">&#128225; Fetch lines &amp; props now</button><select id="nba-odds-scope" style="background:var(--surf2);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:3px;font-family:var(--mono);font-size:11px"><option value="next2">Props: next 2 game days</option><option value="next4">Props: next 4 game days</option><option value="all">Props: every upcoming game</option></select></div><div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:6px;line-height:1.6">Pulls the five books directly with the key above and updates the loaded data. Props cost about 7 credits per game, game lines about 3. Load nba_model_data.json first.</div><div id="nba-odds-status" style="font-family:var(--mono);font-size:11px;margin-top:6px"></div></div>
     </div>
 <div class="card" style="display:none" data-nba-hidden="1">
       <div class="card-title">SportsGameOdds — Caesars / ESPN BET / Unibet / William Hill Lines</div>
@@ -44271,7 +44272,7 @@ document.addEventListener('DOMContentLoaded',function(){try{window.refreshDataLa
     var allGames = S.result.games;
     if (!allGames.length) { put('matchup', empty('No games in the loaded schedule (next 7 days).')); return; }
     var dates = []; allGames.forEach(function (c) { if (c.game.date && dates.indexOf(c.game.date) < 0) dates.push(c.game.date); }); dates.sort();
-    if (S.day == null) { var td = new Date().toISOString().slice(0, 10); S.day = dates.filter(function (d) { return d >= td; })[0] || dates[0]; }
+    if (S.day == null) { var td = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); S.day = dates.filter(function (d) { return d >= td; })[0] || dates[0]; }
     var games = S.day === 'all' ? allGames : allGames.filter(function (c) { return c.game.date === S.day; });
     var dayCount = function (d) { return allGames.filter(function (c) { return c.game.date === d; }).length; };
     var dayBar = '<div class="nba-filters" style="margin-bottom:10px"><label class="mono" style="font-size:11px">Date <input type="date" id="nba-day" min="' + dates[0] + '" max="' + dates[dates.length - 1] + '" value="' + (S.day === 'all' ? '' : S.day) + '" onchange="NBAUI.day(this.value)"></label>' +
@@ -44280,7 +44281,7 @@ document.addEventListener('DOMContentLoaded',function(){try{window.refreshDataLa
     if (!games.length) { put('matchup', '<div class="sec-head">⚡ Matchup Analyzer <span class="badge">NBA</span></div>' + dayBar + empty('No games on ' + esc(S.day) + ' in the loaded schedule. Pick another date above (the schedule covers ' + esc(dates[0]) + ' to ' + esc(dates[dates.length - 1]) + ').')); return; }
     if (S.sel == null || !games.some(function (c) { return c.game.id === S.sel; })) S.sel = games[0].game.id;
     var list = games.map(function (c) {
-      var g = c.game, p = c.proj, flags = (g.away_b2b ? ' <span class="nba-pill" style="color:var(--red)">' + esc(g.away) + ' B2B</span>' : '') + (g.home_b2b ? ' <span class="nba-pill" style="color:var(--red)">' + esc(g.home) + ' B2B</span>' : '');
+      var g = c.game, p = c.proj, flags = (g.preseason ? ' <span class="nba-pill" style="color:var(--gold)">PRESEASON</span>' : '') + (g.away_b2b ? ' <span class="nba-pill" style="color:var(--red)">' + esc(g.away) + ' B2B</span>' : '') + (g.home_b2b ? ' <span class="nba-pill" style="color:var(--red)">' + esc(g.home) + ' B2B</span>' : '');
       return '<div class="nba-game' + (g.id === S.sel ? ' sel' : '') + '" data-id="' + esc(g.id) + '" onclick="NBAUI.pick(this.getAttribute(\'data-id\'))"><div><b>' + esc(g.away) + ' @ ' + esc(g.home) + '</b>' + flags +
         '<div class="mono" style="font-size:10px;color:var(--text3)">' + esc(g.date) + '</div></div><div class="mono" style="text-align:right;font-size:12px">' + esc(g.home) + ' ' + sgn(-p.margin) + '<br><span style="color:var(--text3)">O/U ' + f1(p.total) + '</span></div></div>';
     }).join('');
@@ -44418,6 +44419,73 @@ document.addEventListener('DOMContentLoaded',function(){try{window.refreshDataLa
     leg: function (k, on) { S.parlay[k] = !!on; renderParlay(); }
   };
   document.addEventListener('DOMContentLoaded', function () { ensureCss(); renderAll(); });
+})();
+
+/* ── Browser fetch of lines + props (same output format as nba_edge_data_pull.py) ─────────────────────── */
+(function () {
+  var BOOKS = ['draftkings', 'fanduel', 'betmgm', 'williamhill_us', 'betrivers'];
+  var LABEL = { draftkings: 'DraftKings', fanduel: 'FanDuel', betmgm: 'BetMGM', williamhill_us: 'Caesars', betrivers: 'BetRivers' };
+  var PM = { player_points: 'pts', player_rebounds: 'reb', player_assists: 'ast', player_threes: 'fg3m', player_points_rebounds_assists: 'pra', player_steals: 'stl', player_blocks: 'blk' };
+  var BASE = 'https://api.the-odds-api.com/v4/sports/basketball_nba';
+  function st(msg, color) { var n = document.getElementById('nba-odds-status'); if (n) { n.textContent = msg; n.style.color = color || 'var(--text3)'; } }
+  function mainLine(offs) { var best = null, bd = 1e9; offs.forEach(function (o) { var d = Math.abs(Math.abs(o.over) - 100) + Math.abs(Math.abs(o.under) - 100); if (d < bd) { best = o; bd = d; } }); return best; }
+  function getKey() { var k = ''; try { k = (document.getElementById('odds-key') || {}).value || localStorage.getItem('nfl_odds_key') || ''; } catch (e) { } return String(k).trim().replace(/^["']|["']$/g, '').replace(/\s+/g, ''); }
+  var credits = 0;
+  function api(path, params) {
+    var u = BASE + path + '?' + Object.keys(params).map(function (k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');
+    return fetch(u).then(function (r) {
+      var last = parseFloat(r.headers.get('x-requests-last')); if (!isNaN(last)) credits += last;
+      var rem = r.headers.get('x-requests-remaining'); if (rem != null) api.remaining = rem;
+      if (!r.ok) throw new Error('Odds API ' + r.status + (r.status === 401 ? ' - key rejected' : r.status === 429 ? ' - quota used up' : ''));
+      return r.json();
+    });
+  }
+  function gameRows(events) {
+    var rows = [];
+    events.forEach(function (ev) {
+      (ev.bookmakers || []).forEach(function (bk) {
+        if (BOOKS.indexOf(bk.key) < 0) return;
+        var row = { event: ev.id, home: ev.home_team, away: ev.away_team, start: ev.commence_time, book: LABEL[bk.key] };
+        (bk.markets || []).forEach(function (m) { (m.outcomes || []).forEach(function (oc) {
+          var side = oc.name === ev.home_team ? 'home' : oc.name === ev.away_team ? 'away' : String(oc.name).toLowerCase();
+          row[m.key + '_' + side] = oc.point != null ? oc.point : oc.price; row[m.key + '_' + side + '_price'] = oc.price; }); });
+        rows.push(row);
+      });
+    });
+    return rows;
+  }
+  function propRows(ev, r) {
+    var rows = [];
+    ((r || {}).bookmakers || []).forEach(function (bk) { (bk.markets || []).forEach(function (m) {
+      var byp = {}; (m.outcomes || []).forEach(function (oc) { var k = oc.description + '|' + oc.point; (byp[k] = byp[k] || { player: oc.description, point: oc.point })[String(oc.name).toLowerCase()] = oc.price; });
+      var offers = {}; Object.keys(byp).forEach(function (k) { var o = byp[k]; if (o.over != null && o.under != null) (offers[o.player] = offers[o.player] || []).push({ line: o.point, over: o.over, under: o.under }); });
+      Object.keys(offers).forEach(function (p) { var mn = mainLine(offers[p]); if (mn) rows.push({ event: ev.id, player: p, market: PM[m.key] || m.key, book: LABEL[bk.key], line: mn.line, over: mn.over, under: mn.under }); });
+    }); });
+    return rows;
+  }
+  window.nbaFetchOdds = function (scope) {
+    var d = window.NBA_DATA; if (!d) { st('Load the NBA data first (the games and players come from nba_model_data.json).', 'var(--orange)'); return Promise.resolve(); }
+    var key = getKey(); if (!key) { st('Enter and save your Odds API key above first.', 'var(--orange)'); return Promise.resolve(); }
+    scope = scope || ((document.getElementById('nba-odds-scope') || {}).value) || 'next2'; credits = 0; st('Fetching game lines…');
+    var keep;
+    return api('/odds', { apiKey: key, regions: 'us', markets: 'h2h,spreads,totals', oddsFormat: 'american', bookmakers: BOOKS.join(',') }).then(function (events) {
+      keep = events; var lines = gameRows(events);
+      var et = function (iso) { return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); };
+      var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), nDays = scope === 'all' ? 99 : scope === 'next4' ? 4 : 2;
+      var days = []; events.forEach(function (ev) { var x = et(ev.commence_time); if (x >= today && days.indexOf(x) < 0) days.push(x); }); days.sort(); days = days.slice(0, nDays);
+      var targets = events.filter(function (ev) { return days.indexOf(et(ev.commence_time)) >= 0; }).slice(0, 30);
+      d.odds = d.odds || { game_lines: [], props: [], note: '' }; d.odds.game_lines = lines;
+      st('Game lines: ' + lines.length + ' rows. Fetching props for ' + targets.length + ' game(s)…');
+      var out = [], i = 0;
+      function next() { if (i >= targets.length) return Promise.resolve(); var ev = targets[i++];
+        return api('/events/' + ev.id + '/odds', { apiKey: key, regions: 'us', markets: Object.keys(PM).join(','), oddsFormat: 'american', bookmakers: BOOKS.join(',') }).then(function (r) { out = out.concat(propRows(ev, r)); }, function (e) { if (/401|429/.test(e.message)) throw e; }).then(next); }
+      return next().then(function () { var ids = {}; targets.forEach(function (t) { ids[t.id] = 1; }); d.odds.props = (d.odds.props || []).filter(function (p) { return !ids[p.event]; }).concat(out);
+        d.odds.note = d.odds.props.length ? '' : 'No player props posted yet'; if (d.meta && d.meta.counts) d.meta.counts.props = d.odds.props.length;
+        d.odds.fetched_in_browser = new Date().toISOString();
+        window.loadModelData(d);
+        st('✅ ' + lines.length + ' game-line rows · ' + out.length + ' prop rows for ' + targets.length + ' game(s) · ~' + credits + ' credits used' + (api.remaining != null ? ' · ' + api.remaining + ' left this month' : '') + (out.length ? '' : ' · no props posted yet - books usually post about a day before tip'), 'var(--green)'); });
+    }).catch(function (e) { st('❌ ' + e.message, 'var(--red)'); });
+  };
 })();
 </script><script>/* NBA Edge Model v1.1 - DFS Optimizer (FanDuel NBA), carried over from NBA Props Model V9 and re-wired to the new engine.
  * Same behaviour as V9: Classic (PG2 SG2 SF2 PF2 C1, $60k) + single-game MVP formats, Cash/GPP modes, lock/exclude, N lineups with
@@ -45612,7 +45680,7 @@ document.addEventListener('DOMContentLoaded',function(){try{window.refreshDataLa
   // hide the weather prefetch control (NBA has no weather); everything else stays
   function hideWeather() { var b = document.querySelector('button[onclick^="prefetchWeatherAndRest"]'); if (b) { var box = b.closest('.exp-card') || b.parentElement; if (box) box.style.display = 'none'; } }
 
-  X.refresh = function () { try { W.populateSharpSelector(); } catch (e) { } try { W.renderShortSlateGameChecklist(); } catch (e) { } try { if (typeof W.loadHeyGenTemplates === 'function') { /* keep user edits */ } } catch (e) { } };
+  X.refresh = function () { try { var r = X.res(), g = el('rpt-games-count'), p = el('rpt-props-count'); if (g) g.textContent = (r ? r.games.length : 0) + ' games loaded'; if (p) p.textContent = (r ? r.props.filter(function (x) { return x.tier !== 'SKIP'; }).length : 0) + ' props ready'; } catch (e) { } try { W.populateSharpSelector(); } catch (e) { } try { W.renderShortSlateGameChecklist(); } catch (e) { } try { if (typeof W.loadHeyGenTemplates === 'function') { /* keep user edits */ } } catch (e) { } };
   document.addEventListener('DOMContentLoaded', function () { hideWeather(); X.refresh(); });
 })();
 </script><script>/* NBA Edge Model v1.2 - slide deck data + Short Slate deck on NBA logic.

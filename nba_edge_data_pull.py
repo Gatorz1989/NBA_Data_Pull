@@ -242,7 +242,7 @@ def parse_schedule_results(sched):
             done = comp.get("status", {}).get("type", {}).get("completed") or ev.get("status", {}).get("type", {}).get("completed")
             if not done: continue
             stype = (ev.get("seasonType") or {}).get("name", "") or (ev.get("season") or {}).get("slug", "")
-            if "post" in str(stype).lower(): continue
+            if "post" in str(stype).lower() or "pre" in str(stype).lower(): continue   # preseason box scores (rested starters) must not feed team ratings
             comps = comp["competitors"]
             me = next(c for c in comps if str(c.get("team", {}).get("id")) == tid)
             op = next(c for c in comps if c is not me)
@@ -354,7 +354,8 @@ def pull_schedule(days=7):
             games.append({"id": ev.get("id"), "date": d.isoformat(), "time": ev.get("date"),
                           "home": (home.get("team") or {}).get("abbreviation"), "away": (away.get("team") or {}).get("abbreviation"),
                           "home_name": (home.get("team") or {}).get("displayName"), "away_name": (away.get("team") or {}).get("displayName"),
-                          "venue": (comp.get("venue") or {}).get("fullName", "")})
+                          "venue": (comp.get("venue") or {}).get("fullName", ""),
+                          "preseason": str((ev.get("season") or {}).get("slug", "")).lower() == "preseason" or (ev.get("season") or {}).get("type") == 1})
     return games
 
 LOG_COLS = ["date", "min", "pts", "reb", "ast", "stl", "blk", "fg3m", "to", "home", "opp", "cur"]
@@ -641,6 +642,13 @@ def selftest():
     only_names = {k: v for k, v in fake.items() if k != "labels"}
     check("gamelog works from long 'names' alone", len(parse_gamelog(only_names)) == 2 and parse_gamelog(only_names)[0]["pts"] == 26)
     check("gamelog parses 3PM and PTS", g[0]["fg3m"] == 3 and g[0]["pts"] == 26)
+    sched = {"team": {"id": "5"}, "events": [
+        {"date": "2026-10-07T00:00Z", "seasonType": {"name": "Preseason"}, "competitions": [{"status": {"type": {"completed": True}}, "competitors": [
+            {"team": {"id": "5", "abbreviation": "OKC"}, "homeAway": "home", "score": {"value": 110}}, {"team": {"id": "9", "abbreviation": "NO"}, "homeAway": "away", "score": {"value": 116}}]}]},
+        {"date": "2026-10-21T00:00Z", "seasonType": {"name": "Regular Season"}, "competitions": [{"status": {"type": {"completed": True}}, "competitors": [
+            {"team": {"id": "5", "abbreviation": "OKC"}, "homeAway": "home", "score": {"value": 120}}, {"team": {"id": "9", "abbreviation": "NO"}, "homeAway": "away", "score": {"value": 100}}]}]}]}
+    pr = parse_schedule_results(sched)
+    check("preseason games are excluded from team results", len(pr) == 1 and pr[0]["pf"] == 120)
     s = summarize_games(g)
     check("summary PRA avg", abs(s["pra"] - ((26 + 17) / 2 + (8 + 6) / 2 + (5 + 9) / 2)) < 0.01)
     check("back-to-back detect", back_to_back({"2026-10-20"}, "2026-10-21") and not back_to_back({"2026-10-19"}, "2026-10-21"))
