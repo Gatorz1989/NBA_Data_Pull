@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* NBA Edge Model v1.5 - headless runner (GitHub Actions). Same engine as the HTML model.
+/* NBA Edge Model v1.6 - headless runner (GitHub Actions). Same engine as the HTML model.
  *
  *   node nba_auto.js predict   today's picks + game projections -> state/pending.json   (never committed: picks stay private until games finish)
  *   node nba_auto.js grade     finished games -> graded rows appended to results/YYYY-MM.json (with closing lines)
@@ -12,7 +12,7 @@
 const fs = require('fs'), path = require('path');
 const E = require('./nba_engine.js');
 
-const VERSION = '1.5';
+const VERSION = '1.6';
 const DEFAULTS = JSON.parse(JSON.stringify(E.getCalibration()));          // factory settings: the prior every refit is anchored to
 const LIMITS = {   // guardrails: nothing moves without enough samples, never leaves [min,max], never moves more than `step` per run
   W_MARKET_SPREAD: { min: 0.20, max: 0.95, step: 0.05, minN: 60, tau: 0.15 },

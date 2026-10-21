@@ -40,3 +40,6 @@ The pull script now fetches 14 days of schedule by default. Set the `NBA_SCHEDUL
 
 ## v1.5 model settings
 The engine's built-in settings are now the fitted v1.5 values (heavier market weights, per-market weights for props, a 2% minimum expected value, three-point % regression, a small late-season bench lift). The daily refit starts from these. If your repo has an `nba_calibration.json` from earlier, delete it once so the refit restarts from the v1.5 values. Replace `nba_engine.js` and `nba_auto.js` in the repo with the new copies.
+
+## v1.6 model settings
+The engine's built-in settings changed again: market weights x1.1 (capped at 0.97), last-5 minutes weight 0.20, defense-vs-position grouped by player role (playmaker / big / other) instead of the box-score position, and assists at shrink 0.30 / market weight 0.90 (almost no assist picks). Replace **all three** files in the repo: `nba_engine.js`, `nba_auto.js` and `nba_edge_data_pull.py` (the pull script now builds the defense-vs-position table by role, so the data file and the engine agree). Delete any old `nba_calibration.json` once so the daily refit restarts from the v1.6 values. The Unders-only and market-off switches live in the browser (Backtest tab) and are not part of the repo files.

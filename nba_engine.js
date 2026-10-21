@@ -26,19 +26,21 @@
       PLATT_A: 1.0, PLATT_B: 0.0,                         // win-prob logistic recalibration (identity until fitted)
       PROP_W_MARKET: 0.35,                                // share of the market's implied mean blended into a prop projection
       F: { FG3_K: 300, FG3_RECENT: 1.0, TANK: 0.08, MOVE_W: 0 }, // extra factors: 3P% regression (attempts-equivalent of league average), share of recent-form weight kept for threes, late-season bench lift on non-contenders, line-movement weight (0 until a fit says otherwise)
-      W_PROP: { pts: 0.88, reb: 0.75, ast: 0.80, pra: 0.92, fg3m: 0.50, stl: 0.55, blk: 0.45 }, // per-stat share of the market's mean blended into a projection (overrides PROP_W_MARKET)
+      W_PROP: { pts: 0.97, reb: 0.825, ast: 0.90, pra: 0.97, fg3m: 0.55, stl: 0.605, blk: 0.495 }, // v1.6: v1.5 weights x1.1 (capped at 0.97), assists 0.90; per-stat share of the market's mean blended into a projection (overrides PROP_W_MARKET)
       OVER_B: 0.0,                                        // logit shift applied to the OVER probability (negative = fewer/lower-rated overs)
       MIN_EV: 0.02,                                       // a prop pick must clear this expected value (per 1U, after the real price) or it is SKIP
-      SHRINK: { pts: 0.45, reb: 0.45, ast: 0.45, pra: 0.45, fg3m: 0.42, stl: 0.36, blk: 0.36 } // prob shrink toward fair price (v1.5: fitted on the 2025-26 backtest)
+      SHRINK: { pts: 0.45, reb: 0.45, ast: 0.30, pra: 0.45, fg3m: 0.42, stl: 0.36, blk: 0.36 } // prob shrink toward fair price (v1.5 fitted on 2025-26; v1.6: assists lowered to 0.30 = almost no assist picks)
     },
+    SWITCH: { UNDERS_ONLY: 0, STAT_OFF: {} },             // v1.6 pick switches (kept apart from the calibration so a backtest run on factory settings still honours them)
     PROP: {
       RECENT_W: 0.30, MIN_GAMES: 8, MIN_MPG: 15, PACE_EXP: 0.80,
       DEF_EXP: { pts: 0.60, reb: 0.15, ast: 0.35, fg3m: 0.40, stl: 0.0, blk: 0.0, pra: 0.45 },
+      DVP_ROLE: 1,                                        // v1.6: defense-vs-position groups players by ROLE (assists/36 >= 5.5 = G, rebounds/36 >= 9 = C, else F) instead of the box-score position
       DVP_W: 0.65,                                        // exponent on the position multiplier when DvP is available
       B2B_MULT: 0.97,
       BLOWOUT_START: 10, BLOWOUT_SLOPE: 0.012, BLOWOUT_FLOOR: 0.90, BLOWOUT_MIN_MPG: 28,
       USAGE_ABSORB: { pts: 0.35, ast: 0.30, reb: 0.20, fg3m: 0.30, stl: 0.0, blk: 0.0 },
-      MIN: { L5_W: 0.40, B2B_STARTER: 1.2, STARTER_MPG: 28, BLOW_RATE: 0.35, BLOW_MAX: 6, BENCH_GAIN: 0.5, ABSORB_CAP: 4, FLOOR: 8, CEIL: 42 },
+      MIN: { L5_W: 0.20, B2B_STARTER: 1.2, STARTER_MPG: 28, BLOW_RATE: 0.35, BLOW_MAX: 6, BENCH_GAIN: 0.5, ABSORB_CAP: 4, FLOOR: 8, CEIL: 42 },
       LOG_MIN: 5,                                         // rows needed before the minutes/empirical path is used
       EMP_W: 0.5,                                         // weight of empirical (vs parametric) probability
       DIST: { pts: 'normal', reb: 'nb', ast: 'nb', pra: 'normal', fg3m: 'nb', stl: 'poisson', blk: 'poisson' },
@@ -94,6 +96,9 @@
     if (cal.TOTAL_SD && !isNaN(cal.TOTAL_SD)) CONFIG.TOTAL_SD = +cal.TOTAL_SD;
   }
   function getCalibration() { var C = CONFIG.CAL; return JSON.parse(JSON.stringify({ W_MARKET_SPREAD: C.W_MARKET_SPREAD, W_MARKET_TOTAL: C.W_MARKET_TOTAL, PLATT_A: C.PLATT_A, PLATT_B: C.PLATT_B, PROP_W_MARKET: C.PROP_W_MARKET, OVER_B: C.OVER_B, MIN_EV: C.MIN_EV, W_PROP: C.W_PROP, F: C.F, SHRINK: C.SHRINK, MARGIN_SD: CONFIG.MARGIN_SD, TOTAL_SD: CONFIG.TOTAL_SD })); }
+  function setSwitches(o) { var W = CONFIG.SWITCH; if (!o) return; if (o.UNDERS_ONLY != null) W.UNDERS_ONLY = o.UNDERS_ONLY ? 1 : 0; if (o.STAT_OFF) { W.STAT_OFF = {}; Object.keys(o.STAT_OFF).forEach(function (k) { if (o.STAT_OFF[k]) W.STAT_OFF[k] = 1; }); } }
+  function getSwitches() { return JSON.parse(JSON.stringify(CONFIG.SWITCH)); }
+  function roleGroup(s) { var m = n(s && s.min, 0); if (m <= 0) return null; var a36 = n(s.ast, 0) / m * 36, r36 = n(s.reb, 0) / m * 36; return a36 >= 5.5 ? 'G' : r36 >= 9 ? 'C' : 'F'; }
   function platt(p) { var C = CONFIG.CAL; return (C.PLATT_A === 1 && C.PLATT_B === 0) ? p : sigmoid(C.PLATT_A * logit(p) + C.PLATT_B); }
 
   // ── team view ─────────────────────────────────────────────────────────────
@@ -318,7 +323,7 @@
     // opponent: position-specific DvP where available (composite stats multiply the parts), else team defensive rating
     var dv = null;
     if (g.oppDvp && useLog) {
-      var grp = g.oppDvp[posGroup(p.pos)];
+      var grp = g.oppDvp[(P.DVP_ROLE && roleGroup(s)) || posGroup(p.pos)];
       if (grp) {
         if (stat === 'pra') { var a = grp.pts, b = grp.reb, c = grp.ast; if (a != null && b != null && c != null) { var wts = [n(s.pts, 0), n(s.reb, 0), n(s.ast, 0)], ws = wts[0] + wts[1] + wts[2]; dv = ws > 0 ? (a * wts[0] + b * wts[1] + c * wts[2]) / ws : 1; } }
         else if (grp[stat] != null) dv = grp[stat];
@@ -405,6 +410,7 @@
     var over = eO >= eU, edge = over ? eO : eU, prob = over ? pOver : pUnder, price = over ? offer.over : offer.under;
     var t = tierFor(edge), trend = null, flag = null;
     if (t && C.MIN_EV > 0 && prob * payout(price) - (1 - prob) < C.MIN_EV) t = null;   // not worth the juice
+    var SW = CONFIG.SWITCH; if (t && SW && ((SW.UNDERS_ONLY && over) || (SW.STAT_OFF && SW.STAT_OFF[stat]))) t = null;   // v1.6 switches: unders only / market turned off
     // trend agreement: tier drops one level when the last-10 average sits on the wrong side of the line
     var l10 = null, rows = logRows(p).slice(-10);
     if (rows.length >= 5) l10 = mean(rows.map(function (r) { return rowStat(r, stat); })); else if (p.stats && p.stats[stat + '_l10'] != null) l10 = p.stats[stat + '_l10'];
@@ -505,6 +511,6 @@
   root.NBAEngine = { CONFIG: CONFIG, phi: phi, poissonCdf: poissonCdf, nbCdf: nbCdf, impliedProb: impliedProb, projectGame: projectGame, injuryPoints: injuryPoints,
     injuryReport: injuryReport, playerImpact: playerImpact, scenarios: scenarios, projectMinutes: projectMinutes, projectProp: projectProp, propProbOver: propProbOver,
     evaluateProp: evaluateProp, evaluateSlate: evaluateSlate, indexData: indexData, tierFor: tierFor, findGameLine: findGameLine, buildSideContexts: buildSideContexts,
-    marketMean: marketMean, setCalibration: setCalibration, getCalibration: getCalibration, platt: platt, logRows: logRows, rowStat: rowStat, posGroup: posGroup };
+    marketMean: marketMean, setCalibration: setCalibration, getCalibration: getCalibration, setSwitches: setSwitches, getSwitches: getSwitches, roleGroup: roleGroup, platt: platt, logRows: logRows, rowStat: rowStat, posGroup: posGroup };
   if (typeof module !== 'undefined') module.exports = root.NBAEngine;
 })(typeof window !== 'undefined' ? window : globalThis);

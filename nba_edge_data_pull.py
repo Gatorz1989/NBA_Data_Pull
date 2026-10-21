@@ -22,7 +22,7 @@ try:
 except ImportError:
     requests = None
 
-VERSION = "1.4"
+VERSION = "1.6"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.environ.get("NBA_OUTPUT_FILE", os.path.join(SCRIPT_DIR, "nba_model_data.json"))
 
@@ -391,12 +391,19 @@ DVP_K = 60          # player-games at which an opponent's observed rate counts 5
 def pos_group(pos):
     return POS_GROUP.get(str(pos or "").upper().split("-")[0].split("/")[0], "F")
 
+def role_group(stats):
+    """v1.6: group by role, not box-score position. assists/36 >= 5.5 -> G, rebounds/36 >= 9 -> C, else F."""
+    m = (stats or {}).get("min") or 0
+    if m <= 0: return None
+    a36 = (stats.get("ast") or 0) / m * 36; r36 = (stats.get("reb") or 0) / m * 36
+    return "G" if a36 >= 5.5 else "C" if r36 >= 9 else "F"
+
 def compute_dvp(players):
     """Opponent-allowed per-minute production by position group, as multipliers around 1.0.
     Built only from logs we already pulled: every log row carries the opponent, so no extra requests are needed."""
     agg, lg, cnt = {}, {}, {}
     for p in players:
-        grp = pos_group(p.get("pos"))
+        grp = role_group(p.get("stats")) or pos_group(p.get("pos"))
         for row in p.get("log", []):
             d = dict(zip(LOG_COLS, row))
             if d["min"] < 10 or not d["opp"]: continue
@@ -688,6 +695,7 @@ def selftest():
     check("dvp: team allowing more points to guards > 1", dv["AAA"]["G"]["pts"] > 1 > dv["BBB"]["G"]["pts"])
     check("dvp shrinks toward 1 with small samples", abs(dv["AAA"]["G"]["pts"] - 1) < 0.2)
     check("pos groups", pos_group("PG") == "G" and pos_group("SF") == "F" and pos_group("C") == "C" and pos_group("G-F") == "G" and pos_group(None) == "F")
+    check("role groups (v1.6)", role_group({"min": 30, "ast": 8, "reb": 3}) == "G" and role_group({"min": 30, "ast": 2, "reb": 11}) == "C" and role_group({"min": 30, "ast": 3, "reb": 5}) == "F" and role_group({"min": 0}) is None)
     check("miles: BOS-LAL ~2600", 2500 < miles("BOS", "LAL") < 2700 and miles("BOS", "BOS") < 1)
     ev = [{"date": "2026-10-20", "home": True, "opp": "BOS"}, {"date": "2026-10-21", "home": False, "opp": "NY"}, {"date": "2026-10-23", "home": True, "opp": "MIA"}, {"date": "2026-10-24", "home": False, "opp": "BOS"}]
     c = rest_context("LAL", ev, "2026-10-21")
