@@ -2,7 +2,8 @@ name: NBA daily - pull data, grade, refit, log
 
 on:
   schedule:
-    - cron: '0 15 * * *'        # 15:00 UTC = 10-11 am Eastern, after last night's games are final
+   # 12:00 UTC = 7:00 am Eastern (standard time, Nov 1 to March 2027)
+    - cron: '0 12 * * *'
   workflow_dispatch:
 
 permissions:
