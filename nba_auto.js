@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* NBA Edge Model v1.3 - headless runner (GitHub Actions). Same engine as the HTML model.
+/* NBA Edge Model v1.5 - headless runner (GitHub Actions). Same engine as the HTML model.
  *
  *   node nba_auto.js predict   today's picks + game projections -> state/pending.json   (never committed: picks stay private until games finish)
  *   node nba_auto.js grade     finished games -> graded rows appended to results/YYYY-MM.json (with closing lines)
@@ -12,11 +12,11 @@
 const fs = require('fs'), path = require('path');
 const E = require('./nba_engine.js');
 
-const VERSION = '1.3';
+const VERSION = '1.5';
 const DEFAULTS = JSON.parse(JSON.stringify(E.getCalibration()));          // factory settings: the prior every refit is anchored to
 const LIMITS = {   // guardrails: nothing moves without enough samples, never leaves [min,max], never moves more than `step` per run
-  W_MARKET_SPREAD: { min: 0.20, max: 0.85, step: 0.05, minN: 60, tau: 0.15 },
-  W_MARKET_TOTAL: { min: 0.20, max: 0.85, step: 0.05, minN: 60, tau: 0.15 },
+  W_MARKET_SPREAD: { min: 0.20, max: 0.95, step: 0.05, minN: 60, tau: 0.15 },
+  W_MARKET_TOTAL: { min: 0.20, max: 0.95, step: 0.05, minN: 60, tau: 0.15 },
   PROP_W_MARKET: { min: 0.10, max: 0.70, step: 0.04, minN: 200, tau: 0.12 },
   SHRINK: { min: 0.25, max: 1.00, step: 0.05, minN: 150, tau: 0.20 },
   PLATT_A: { min: 0.60, max: 1.40, step: 0.04, minN: 150, tau: 0.15 },

@@ -8,7 +8,7 @@
   'use strict';
 
   var CONFIG = {
-    LEAGUE: { pace: 99.5, ortg: 114.5, drtg: 114.5, ppg: 114.5, fp36: 33, repl_fp36: 27 },
+    LEAGUE: { fg3pct: 0.365, pace: 99.5, ortg: 114.5, drtg: 114.5, ppg: 114.5, fp36: 33, repl_fp36: 27 },
     HCA: 2.4,
     REST: { B2B: 2.0, IN4: 1.0, DAY: 0.35, DAY_CAP: 2, TRAVEL: 0.30, TRAVEL_FREE: 1200 }, // pts; travel = pts per 1000 mi beyond TRAVEL_FREE
     FORM_W: 0.15,             // v1 fallback: weight on (last-5 ppg - season ppg)
@@ -22,10 +22,14 @@
     INJ_STATUS_W: { out: 1.0, doubtful: 0.9, questionable: 0.5, 'day-to-day': 0.3, probable: 0.1 }, // legacy injuryPoints()
     INJ_PTS_LOST: 0.55, INJ_MIN_MPG: 15,
     CAL: {
-      W_MARKET_SPREAD: 0.5, W_MARKET_TOTAL: 0.6,         // share of the final number taken from the market when a line exists
+      W_MARKET_SPREAD: 0.85, W_MARKET_TOTAL: 0.90,       // share of the final number taken from the market when a line exists
       PLATT_A: 1.0, PLATT_B: 0.0,                         // win-prob logistic recalibration (identity until fitted)
       PROP_W_MARKET: 0.35,                                // share of the market's implied mean blended into a prop projection
-      SHRINK: { pts: 0.75, reb: 0.75, ast: 0.75, pra: 0.75, fg3m: 0.70, stl: 0.60, blk: 0.60 } // prob shrink toward fair price
+      F: { FG3_K: 300, FG3_RECENT: 1.0, TANK: 0.08, MOVE_W: 0 }, // extra factors: 3P% regression (attempts-equivalent of league average), share of recent-form weight kept for threes, late-season bench lift on non-contenders, line-movement weight (0 until a fit says otherwise)
+      W_PROP: { pts: 0.88, reb: 0.75, ast: 0.80, pra: 0.92, fg3m: 0.50, stl: 0.55, blk: 0.45 }, // per-stat share of the market's mean blended into a projection (overrides PROP_W_MARKET)
+      OVER_B: 0.0,                                        // logit shift applied to the OVER probability (negative = fewer/lower-rated overs)
+      MIN_EV: 0.02,                                       // a prop pick must clear this expected value (per 1U, after the real price) or it is SKIP
+      SHRINK: { pts: 0.45, reb: 0.45, ast: 0.45, pra: 0.45, fg3m: 0.42, stl: 0.36, blk: 0.36 } // prob shrink toward fair price (v1.5: fitted on the 2025-26 backtest)
     },
     PROP: {
       RECENT_W: 0.30, MIN_GAMES: 8, MIN_MPG: 15, PACE_EXP: 0.80,
@@ -82,12 +86,14 @@
   function setCalibration(cal) {
     if (!cal) return;
     var C = CONFIG.CAL;
-    ['W_MARKET_SPREAD', 'W_MARKET_TOTAL', 'PLATT_A', 'PLATT_B', 'PROP_W_MARKET'].forEach(function (k) { if (cal[k] != null && !isNaN(cal[k])) C[k] = +cal[k]; });
+    ['W_MARKET_SPREAD', 'W_MARKET_TOTAL', 'PLATT_A', 'PLATT_B', 'PROP_W_MARKET', 'OVER_B', 'MIN_EV'].forEach(function (k) { if (cal[k] != null && !isNaN(cal[k])) C[k] = +cal[k]; });
+    if (cal.F) { C.F = C.F || {}; Object.keys(cal.F).forEach(function (k) { if (!isNaN(cal.F[k])) C.F[k] = +cal.F[k]; }); }
+    if (cal.W_PROP) { C.W_PROP = {}; Object.keys(cal.W_PROP).forEach(function (k) { if (!isNaN(cal.W_PROP[k])) C.W_PROP[k] = +cal.W_PROP[k]; }); }
     if (cal.SHRINK) Object.keys(cal.SHRINK).forEach(function (k) { if (!isNaN(cal.SHRINK[k])) C.SHRINK[k] = +cal.SHRINK[k]; });
     if (cal.MARGIN_SD && !isNaN(cal.MARGIN_SD)) CONFIG.MARGIN_SD = +cal.MARGIN_SD;
     if (cal.TOTAL_SD && !isNaN(cal.TOTAL_SD)) CONFIG.TOTAL_SD = +cal.TOTAL_SD;
   }
-  function getCalibration() { var C = CONFIG.CAL; return JSON.parse(JSON.stringify({ W_MARKET_SPREAD: C.W_MARKET_SPREAD, W_MARKET_TOTAL: C.W_MARKET_TOTAL, PLATT_A: C.PLATT_A, PLATT_B: C.PLATT_B, PROP_W_MARKET: C.PROP_W_MARKET, SHRINK: C.SHRINK, MARGIN_SD: CONFIG.MARGIN_SD, TOTAL_SD: CONFIG.TOTAL_SD })); }
+  function getCalibration() { var C = CONFIG.CAL; return JSON.parse(JSON.stringify({ W_MARKET_SPREAD: C.W_MARKET_SPREAD, W_MARKET_TOTAL: C.W_MARKET_TOTAL, PLATT_A: C.PLATT_A, PLATT_B: C.PLATT_B, PROP_W_MARKET: C.PROP_W_MARKET, OVER_B: C.OVER_B, MIN_EV: C.MIN_EV, W_PROP: C.W_PROP, F: C.F, SHRINK: C.SHRINK, MARGIN_SD: CONFIG.MARGIN_SD, TOTAL_SD: CONFIG.TOTAL_SD })); }
   function platt(p) { var C = CONFIG.CAL; return (C.PLATT_A === 1 && C.PLATT_B === 0) ? p : sigmoid(C.PLATT_A * logit(p) + C.PLATT_B); }
 
   // ── team view ─────────────────────────────────────────────────────────────
@@ -294,12 +300,19 @@
     var tm = teamView(g.teamMetrics), opp = teamView(g.oppMetrics);
     if (useLog) {
       var mp = projectMinutes(p, rows, g); mins = mp.min; adj.minutes = mp.adj;
+      var FT = CONFIG.CAL.F || {};
+      if (FT.TANK > 0 && g.motiv && g.motiv.rem <= 25 && g.motiv.wp < 0.38 && n(s.min, 0) >= 8 && n(s.min, 0) < 22) { var lift = 1 + FT.TANK * (25 - g.motiv.rem) / 25; mins = Math.min(CONFIG.PROP.MIN.CEIL, mins * lift); adj.tank = lift; }
       var key = STAT_KEYS[stat];
       var seasonRate = n(s[key], 0) / s.min, l10 = rows.slice(-10);
       var l10min = l10.reduce(function (a, r) { return a + r[1]; }, 0), l10val = l10.reduce(function (a, r) { return a + rowStat(r, stat); }, 0);
-      var rate = (l10min > 0 && stat !== 'pra') ? (1 - P.RECENT_W) * seasonRate + P.RECENT_W * (l10val / l10min) : (stat === 'pra' && l10min > 0 ? (1 - P.RECENT_W) * seasonRate + P.RECENT_W * (l10val / l10min) : seasonRate);
+      var FX = CONFIG.CAL.F || {}, ratio3 = 1;
+      if (stat === 'fg3m' && FX.FG3_K > 0 && n(s.fg3a, 0) > 0.5) {   // regress the make rate toward the league 3P%, keep the attempt volume
+        var att = n(s.fg3a, 0) * (n(s.gp, 0) + 0.5 * n(s.gp_prior, 0)), pct = n(s.fg3m, 0) / s.fg3a, regp = (att * pct + FX.FG3_K * CONFIG.LEAGUE.fg3pct) / (att + FX.FG3_K);
+        ratio3 = regp / Math.max(pct, 0.05); seasonRate = seasonRate * ratio3; adj.fg3reg = ratio3;
+      }
+      var rate = (l10min > 0 && stat !== 'pra') ? (1 - P.RECENT_W * (stat === 'fg3m' ? FX.FG3_RECENT : 1)) * seasonRate + P.RECENT_W * (stat === 'fg3m' ? FX.FG3_RECENT : 1) * (l10val / l10min) : (stat === 'pra' && l10min > 0 ? (1 - P.RECENT_W) * seasonRate + P.RECENT_W * (l10val / l10min) : seasonRate);
       v = rate * mins; base = v;
-      samples = rows.map(function (r) { return rowStat(r, stat) / r[1] * mins; });
+      samples = rows.map(function (r) { return rowStat(r, stat) / r[1] * mins * ratio3; });
     }
     if (g.gamePoss && tm.pace) { adj.pace = Math.pow(g.gamePoss / tm.pace, P.PACE_EXP); v *= adj.pace; if (samples) samples = samples.map(function (x) { return x * adj.pace; }); }
     // opponent: position-specific DvP where available (composite stats multiply the parts), else team defensive rating
@@ -380,14 +393,18 @@
     var C = CONFIG.CAL, beO = impliedProb(offer.over), beU = impliedProb(offer.under);
     if (beO == null || beU == null) return null;
     var vig = beO + beU, fairO = beO / vig, fairU = beU / vig;
-    var proj = pr.proj, raw = pr.proj;
-    if (mktMean != null && !isNaN(mktMean)) proj = (1 - C.PROP_W_MARKET) * proj + C.PROP_W_MARKET * mktMean;
+    var proj = pr.proj, raw = pr.proj, move = (offer.open != null && !isNaN(offer.open)) ? offer.line - offer.open : null;
+    if (mktMean != null && !isNaN(mktMean)) { var wm = (C.W_PROP && C.W_PROP[stat] != null) ? C.W_PROP[stat] : C.PROP_W_MARKET; proj = (1 - wm) * proj + wm * mktMean; }
+    if (move != null && C.F && C.F.MOVE_W) proj += C.F.MOVE_W * move;   // line movement since the early snapshot (fitted weight; 0 = ignore)
     var pOverRaw = propProbOver(proj, pr.sd, offer.line, stat, { samples: pr.samples });
     var sh = n(C.SHRINK[stat], 0.75);
-    var pOver = fairO + sh * (pOverRaw - fairO), pUnder = 1 - pOver;
+    var pOver = fairO + sh * (pOverRaw - fairO);
+    if (C.OVER_B) pOver = sigmoid(logit(pOver) + C.OVER_B);
+    var pUnder = 1 - pOver;
     var eO = (pOver - fairO) * 100, eU = (pUnder - fairU) * 100;
     var over = eO >= eU, edge = over ? eO : eU, prob = over ? pOver : pUnder, price = over ? offer.over : offer.under;
     var t = tierFor(edge), trend = null, flag = null;
+    if (t && C.MIN_EV > 0 && prob * payout(price) - (1 - prob) < C.MIN_EV) t = null;   // not worth the juice
     // trend agreement: tier drops one level when the last-10 average sits on the wrong side of the line
     var l10 = null, rows = logRows(p).slice(-10);
     if (rows.length >= 5) l10 = mean(rows.map(function (r) { return rowStat(r, stat); })); else if (p.stats && p.stats[stat + '_l10'] != null) l10 = p.stats[stat + '_l10'];
@@ -399,7 +416,7 @@
     return { player: p.name, team: p.team, stat: stat, book: offer.book, line: offer.line, side: over ? 'OVER' : 'UNDER',
              price: price, proj: proj, projRaw: raw, sd: pr.sd, minutes: pr.minutes != null ? pr.minutes : null, prob: prob, probRaw: rawProb, fair: over ? fairO : fairU,
              edge: edge, ev: prob * payout(price) - (1 - prob), tier: t ? t.name : 'SKIP', units: t ? t.units : '0U',
-             trend: trend, flag: flag, mktMean: mktMean != null ? mktMean : null, adj: pr.adj };
+             move: move, trend: trend, flag: flag, mktMean: mktMean != null ? mktMean : null, adj: pr.adj };
   }
 
   // ── whole-slate driver ────────────────────────────────────────────────────
@@ -444,6 +461,7 @@
     return tot;
   }
 
+  function motivOf(m) { m = m || {}; var gp = n(m.wins, 0) + n(m.losses, 0); return gp >= 20 ? { rem: 82 - gp, wp: n(m.wins, 0) / gp } : null; }
   function buildSideContexts(data) {
     var idx = indexData(data), out = [];
     (data.games || []).forEach(function (g) {
@@ -457,7 +475,7 @@
         inj.list.forEach(function (i) { absent.push({ name: i.name, stats: i.stats, weight: i.pOut }); });
         out.push({ game: g, gctx: ctx, team: tAbbr, opp: oAbbr, roster: roster, absentNames: absentNames,
           gameCtx: { oppMetrics: idx.metrics[oAbbr], teamMetrics: idx.metrics[tAbbr], oppDvp: idx.dvp[oAbbr], gamePoss: ctx.proj.poss, margin: ctx.proj.margin,
-                     teamB2B: sides[0] === 'home' ? g.home_b2b : g.away_b2b, absent: absent, rotationTotals: rotationTotals(roster, absentNames) } });
+                     teamB2B: sides[0] === 'home' ? g.home_b2b : g.away_b2b, motiv: motivOf(idx.metrics[tAbbr]), absent: absent, rotationTotals: rotationTotals(roster, absentNames) } });
       });
     });
     return { idx: idx, sides: out };

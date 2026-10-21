@@ -23,3 +23,20 @@ No setting moves until 10 graded days exist; each setting needs its own minimum 
 
 ## Odds API credits
 Daily pull plus snapshots: roughly 1 call per game window for lines and 1 per game for props, a few dozen credits on a full slate. Check the quota on your Odds API dashboard after the first week.
+
+## Music (optional)
+The `music/` folder holds the intro-video song and a `music.json` list. Upload the folder to the repo root. In the model's Export tab the cloud music list reads it (address `https://raw.githubusercontent.com/Gatorz1989/NBA_Data_Pull/main/music/`). Add more MP3s there any time and add them to `music.json`.
+
+## Full-season backtest data (optional, new in v1.4)
+The Backtest tab can replay whole seasons (2024-25, 2025-26) with real historical lines. The pulled data lives in the browser that pulled it.
+To use it from any device (and keep it safe), do this once per season:
+1. In the model: Backtest tab > pick the season > run steps 1 and 2 > **Options & data files > Save data file (.json.gz)**.
+2. In your GitHub repo create a folder named `backtest` and upload the file (`NBA_BT_Data_2025-26.json.gz`) into it.
+3. Any browser can then press **Load from repo (backtest/)** for 0 credits.
+The file is a few MB. It is not used by the daily workflows.
+
+## Schedule window (pull script v1.4)
+The pull script now fetches 14 days of schedule by default. Set the `NBA_SCHEDULE_DAYS` environment variable (7-30) in the workflow to change it.
+
+## v1.5 model settings
+The engine's built-in settings are now the fitted v1.5 values (heavier market weights, per-market weights for props, a 2% minimum expected value, three-point % regression, a small late-season bench lift). The daily refit starts from these. If your repo has an `nba_calibration.json` from earlier, delete it once so the refit restarts from the v1.5 values. Replace `nba_engine.js` and `nba_auto.js` in the repo with the new copies.

@@ -22,7 +22,7 @@ try:
 except ImportError:
     requests = None
 
-VERSION = "1.2"
+VERSION = "1.4"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.environ.get("NBA_OUTPUT_FILE", os.path.join(SCRIPT_DIR, "nba_model_data.json"))
 
@@ -43,6 +43,7 @@ BOOK_LABEL = {"draftkings": "DraftKings", "fanduel": "FanDuel", "betmgm": "BetMG
 PROP_MARKETS = {"player_points": "pts", "player_rebounds": "reb", "player_assists": "ast",
                 "player_threes": "fg3m", "player_points_rebounds_assists": "pra",
                 "player_steals": "stl", "player_blocks": "blk"}
+SCHEDULE_DAYS = max(7, min(30, int(os.environ.get("NBA_SCHEDULE_DAYS", "14") or 14)))   # how many days of games the file holds (Odds API only lists lines ~1-4 days ahead)
 PRIOR_K = 12   # games of current season at which current/prior weights are equal
 
 
@@ -596,7 +597,7 @@ def main():
         m.update(strength.get(abbr, {})); m.update(rv.get(abbr, {}))
         ts["dvp"] = dvp.get(abbr, {})
 
-    games = pull_schedule(7)
+    games = pull_schedule(SCHEDULE_DAYS)
     for g in games:
         for side in ("home", "away"):
             ev = team_stats.get(g[side], {}).get("events", [])
@@ -626,6 +627,7 @@ def selftest():
     def check(name, cond):
         nonlocal ok
         print(("PASS " if cond else "FAIL ") + name); ok = ok and bool(cond)
+    check("schedule window is 7-30 days (default 14)", 7 <= SCHEDULE_DAYS <= 30)
     check("blend weight 0 games = 0", blend_weight(0) == 0)
     check("blend weight at k = 0.5", abs(blend_weight(12) - 0.5) < 1e-9)
     check("blend 20 cur/10 prior at 12 games = 15", abs(blend(20, 10, 12) - 15) < 1e-9)
