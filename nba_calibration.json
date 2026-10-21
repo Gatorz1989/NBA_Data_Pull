@@ -21,23 +21,23 @@
     "TOTAL_SD": 18
   },
   "fit": {
-    "updated": "2026-10-20T18:53:28.081Z",
+    "updated": "2026-10-21T16:25:47.301Z",
     "n": {},
     "notes": [
-      "Only 0 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
+      "Only 1 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
     ]
   },
   "limits": {
     "W_MARKET_SPREAD": {
       "min": 0.2,
-      "max": 0.85,
+      "max": 0.95,
       "step": 0.05,
       "minN": 60,
       "tau": 0.15
     },
     "W_MARKET_TOTAL": {
       "min": 0.2,
-      "max": 0.85,
+      "max": 0.95,
       "step": 0.05,
       "minN": 60,
       "tau": 0.15

@@ -1,33 +1,199 @@
 {
-  "generated": "2026-10-20T18:53:28.081Z",
+  "generated": "2026-10-21T16:25:47.301Z",
   "format": "nba-summary-1",
-  "model": "1.3",
+  "model": "1.6",
   "counts": {
-    "propsGraded": 0,
-    "picksGraded": 0,
-    "gamesGraded": 0
+    "propsGraded": 192,
+    "picksGraded": 191,
+    "gamesGraded": 3
   },
-  "through": null,
-  "since": null,
+  "through": "2026-10-20",
+  "since": "2026-10-20",
   "record": {
     "overall": {
-      "w": 0,
-      "l": 0,
+      "w": 104,
+      "l": 87,
       "p": 0,
-      "u": 0,
-      "n": 0
+      "u": 19.295155170794946,
+      "n": 191
     },
-    "byTier": {},
-    "byStat": {},
-    "bySide": {},
-    "byEdge": {},
-    "byBook": {},
+    "byTier": {
+      "ELITE": {
+        "w": 20,
+        "l": 9,
+        "p": 0,
+        "u": 24.50540627166512,
+        "n": 29
+      },
+      "STRONG": {
+        "w": 18,
+        "l": 20,
+        "p": 0,
+        "u": -7.16831585853856,
+        "n": 38
+      },
+      "MED": {
+        "w": 29,
+        "l": 19,
+        "p": 0,
+        "u": 5.6293844863008164,
+        "n": 48
+      },
+      "LEAN": {
+        "w": 37,
+        "l": 39,
+        "p": 0,
+        "u": -3.671319728632432,
+        "n": 76
+      }
+    },
+    "byStat": {
+      "pts": {
+        "w": 23,
+        "l": 19,
+        "p": 0,
+        "u": 14.716386424615745,
+        "n": 42
+      },
+      "pra": {
+        "w": 18,
+        "l": 23,
+        "p": 0,
+        "u": -7.0009688880009735,
+        "n": 41
+      },
+      "ast": {
+        "w": 11,
+        "l": 13,
+        "p": 0,
+        "u": -3.159560513860716,
+        "n": 24
+      },
+      "reb": {
+        "w": 25,
+        "l": 15,
+        "p": 0,
+        "u": 12.771388351972613,
+        "n": 40
+      },
+      "fg3m": {
+        "w": 15,
+        "l": 11,
+        "p": 0,
+        "u": -0.06067561466680854,
+        "n": 26
+      },
+      "stl": {
+        "w": 10,
+        "l": 5,
+        "p": 0,
+        "u": 1.0762044583541237,
+        "n": 15
+      },
+      "blk": {
+        "w": 2,
+        "l": 1,
+        "p": 0,
+        "u": 0.9523809523809523,
+        "n": 3
+      }
+    },
+    "bySide": {
+      "OVER": {
+        "w": 58,
+        "l": 54,
+        "p": 0,
+        "u": 12.635132040380059,
+        "n": 112
+      },
+      "UNDER": {
+        "w": 46,
+        "l": 33,
+        "p": 0,
+        "u": 6.660023130414883,
+        "n": 79
+      }
+    },
+    "byEdge": {
+      "18+": {
+        "w": 2,
+        "l": 2,
+        "p": 0,
+        "u": -0.7477064220183482,
+        "n": 4
+      },
+      "12-18": {
+        "w": 18,
+        "l": 7,
+        "p": 0,
+        "u": 25.253112693683466,
+        "n": 25
+      },
+      "8-12": {
+        "w": 19,
+        "l": 22,
+        "p": 0,
+        "u": -8.008315858538564,
+        "n": 41
+      },
+      "5-8": {
+        "w": 40,
+        "l": 24,
+        "p": 0,
+        "u": 9.57315577453458,
+        "n": 64
+      },
+      "<5": {
+        "w": 25,
+        "l": 32,
+        "p": 0,
+        "u": -6.7750910168662,
+        "n": 57
+      }
+    },
+    "byBook": {
+      "BetRivers": {
+        "w": 25,
+        "l": 23,
+        "p": 0,
+        "u": -0.878787361266106,
+        "n": 48
+      },
+      "DraftKings": {
+        "w": 42,
+        "l": 31,
+        "p": 0,
+        "u": 10.80950443900528,
+        "n": 73
+      },
+      "FanDuel": {
+        "w": 30,
+        "l": 23,
+        "p": 0,
+        "u": 11.045649510185239,
+        "n": 53
+      },
+      "Caesars": {
+        "w": 4,
+        "l": 8,
+        "p": 0,
+        "u": -2.6284336393516945,
+        "n": 12
+      },
+      "BetMGM": {
+        "w": 3,
+        "l": 2,
+        "p": 0,
+        "u": 0.9472222222222224,
+        "n": 5
+      }
+    },
     "last30": {
-      "w": 0,
-      "l": 0,
+      "w": 104,
+      "l": 87,
       "p": 0,
-      "u": 0,
-      "n": 0
+      "u": 19.295155170794946,
+      "n": 191
     },
     "games": {
       "ats": {
@@ -46,14 +212,66 @@
       }
     }
   },
-  "daily": [],
-  "reliability": [],
+  "daily": [
+    {
+      "date": "2026-10-20",
+      "w": 104,
+      "l": 87,
+      "p": 0,
+      "u": 19.295155170794946,
+      "n": 191
+    }
+  ],
+  "reliability": [
+    {
+      "range": "45-50%",
+      "n": 13,
+      "predicted": 0.482,
+      "actual": 0.615
+    },
+    {
+      "range": "50-55%",
+      "n": 40,
+      "predicted": 0.531,
+      "actual": 0.425
+    },
+    {
+      "range": "55-60%",
+      "n": 66,
+      "predicted": 0.579,
+      "actual": 0.424
+    },
+    {
+      "range": "60-65%",
+      "n": 30,
+      "predicted": 0.623,
+      "actual": 0.6
+    },
+    {
+      "range": "65-70%",
+      "n": 25,
+      "predicted": 0.674,
+      "actual": 0.88
+    },
+    {
+      "range": "70-75%",
+      "n": 6,
+      "predicted": 0.715,
+      "actual": 0.667
+    },
+    {
+      "range": "75-80%",
+      "n": 1,
+      "predicted": 0.782,
+      "actual": 1
+    }
+  ],
   "gameModel": {
-    "n": 0,
-    "maeMargin": null,
-    "maeMarginRaw": null,
-    "maeTotal": null,
-    "maeTotalRaw": null,
+    "n": 3,
+    "maeMargin": 9.858,
+    "maeMarginRaw": 9.858,
+    "maeTotal": 12.531,
+    "maeTotalRaw": 12.531,
     "mktMaeMargin": 0,
     "mktMaeTotal": 0
   },
@@ -71,8 +289,24 @@
       "avg": null
     }
   },
-  "epochs": [],
-  "flags": [],
+  "epochs": [
+    {
+      "calv": 0,
+      "since": null,
+      "n": 191,
+      "record": "104-87-0",
+      "winPct": 0.545,
+      "units": 19.295,
+      "brier": 0.243,
+      "avgClv": null
+    }
+  ],
+  "flags": [
+    "Picks the model rated 50-55% won 43% (40 picks): overconfident.",
+    "Picks the model rated 55-60% won 42% (66 picks): overconfident.",
+    "Picks the model rated 65-70% won 88% (25 picks): underconfident.",
+    "pra props are losing (18-23, -7.001U over 41 picks)."
+  ],
   "calibration": {
     "version": 0,
     "updated": null,
@@ -95,31 +329,50 @@
       "TOTAL_SD": 18
     },
     "defaults": {
-      "W_MARKET_SPREAD": 0.5,
-      "W_MARKET_TOTAL": 0.6,
+      "W_MARKET_SPREAD": 0.85,
+      "W_MARKET_TOTAL": 0.9,
       "PLATT_A": 1,
       "PLATT_B": 0,
       "PROP_W_MARKET": 0.35,
+      "OVER_B": 0,
+      "MIN_EV": 0.02,
+      "W_PROP": {
+        "pts": 0.97,
+        "reb": 0.825,
+        "ast": 0.9,
+        "pra": 0.97,
+        "fg3m": 0.55,
+        "stl": 0.605,
+        "blk": 0.495
+      },
+      "F": {
+        "FG3_K": 300,
+        "FG3_RECENT": 1,
+        "TANK": 0.08,
+        "MOVE_W": 0
+      },
       "SHRINK": {
-        "pts": 0.75,
-        "reb": 0.75,
-        "ast": 0.75,
-        "pra": 0.75,
-        "fg3m": 0.7,
-        "stl": 0.6,
-        "blk": 0.6
+        "pts": 0.45,
+        "reb": 0.45,
+        "ast": 0.3,
+        "pra": 0.45,
+        "fg3m": 0.42,
+        "stl": 0.36,
+        "blk": 0.36
       },
       "MARGIN_SD": 12,
       "TOTAL_SD": 18
     },
     "fit": {
-      "updated": "2026-10-20T18:53:28.081Z",
+      "updated": "2026-10-21T16:25:47.301Z",
       "n": {},
       "notes": [
-        "Only 0 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
+        "Only 1 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
       ]
     }
   },
   "changeLog": [],
-  "files": []
+  "files": [
+    "2026-10.json"
+  ]
 }
