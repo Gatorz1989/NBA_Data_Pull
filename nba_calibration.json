@@ -1,30 +1,48 @@
 {
   "format": "nba-calibration-1",
-  "version": 0,
-  "updated": null,
+  "version": 1,
+  "updated": "2026-10-30T17:35:06.690Z",
   "cal": {
     "W_MARKET_SPREAD": 0.5,
     "W_MARKET_TOTAL": 0.6,
     "PLATT_A": 1,
     "PLATT_B": 0,
-    "PROP_W_MARKET": 0.35,
+    "PROP_W_MARKET": 0.39,
     "SHRINK": {
-      "pts": 0.75,
-      "reb": 0.75,
-      "ast": 0.75,
-      "pra": 0.75,
-      "fg3m": 0.7,
+      "pts": 0.7,
+      "reb": 0.7,
+      "ast": 0.7,
+      "pra": 0.7,
+      "fg3m": 0.65,
       "stl": 0.6,
       "blk": 0.6
     },
-    "MARGIN_SD": 12,
-    "TOTAL_SD": 18
+    "MARGIN_SD": 12.4,
+    "TOTAL_SD": 18.5
   },
   "fit": {
-    "updated": "2026-10-29T17:53:01.654Z",
-    "n": {},
+    "updated": "2026-10-30T17:35:06.690Z",
+    "n": {
+      "W_MARKET_SPREAD": 7,
+      "W_MARKET_TOTAL": 7,
+      "PROP_W_MARKET": 1572,
+      "SHRINK.pts": 330,
+      "SHRINK.reb": 333,
+      "SHRINK.ast": 286,
+      "SHRINK.fg3m": 272,
+      "SHRINK.pra": 274,
+      "SHRINK.stl": 50,
+      "SHRINK.blk": 27,
+      "PLATT": 71,
+      "MARGIN_SD": 71,
+      "TOTAL_SD": 71
+    },
     "notes": [
-      "Only 9 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
+      "Market weight (spread): 7 of 60 samples needed, unchanged",
+      "Market weight (total): 7 of 60 samples needed, unchanged",
+      "Prop shrink stl: 50 of 150 samples needed, unchanged",
+      "Prop shrink blk: 27 of 150 samples needed, unchanged",
+      "Win-probability calibration: 71 of 150 samples needed, unchanged"
     ]
   },
   "limits": {

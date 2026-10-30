@@ -1,50 +1,50 @@
 {
-  "generated": "2026-10-29T17:53:01.654Z",
+  "generated": "2026-10-30T17:35:06.690Z",
   "format": "nba-summary-1",
   "model": "1.6",
   "counts": {
-    "propsGraded": 1555,
-    "picksGraded": 1401,
-    "gamesGraded": 68
+    "propsGraded": 1572,
+    "picksGraded": 1412,
+    "gamesGraded": 71
   },
-  "through": "2026-10-28",
+  "through": "2026-10-29",
   "since": "2026-10-20",
   "record": {
     "overall": {
-      "w": 771,
-      "l": 630,
+      "w": 777,
+      "l": 635,
       "p": 0,
-      "u": 174.57156189193748,
-      "n": 1401
+      "u": 176.42172774037144,
+      "n": 1412
     },
     "byTier": {
       "ELITE": {
-        "w": 141,
+        "w": 142,
         "l": 79,
         "p": 0,
-        "u": 147.34801824376638,
-        "n": 220
+        "u": 148.969639865388,
+        "n": 221
       },
       "STRONG": {
-        "w": 154,
+        "w": 155,
         "l": 127,
         "p": 0,
-        "u": 21.982643972934873,
-        "n": 281
+        "u": 23.4112154015063,
+        "n": 282
       },
       "MED": {
-        "w": 253,
-        "l": 193,
+        "w": 256,
+        "l": 195,
         "p": 0,
-        "u": 22.56943640003098,
-        "n": 446
+        "u": 22.54682855311062,
+        "n": 451
       },
       "LEAN": {
-        "w": 223,
-        "l": 231,
+        "w": 224,
+        "l": 234,
         "p": 0,
-        "u": -17.3285367247946,
-        "n": 454
+        "u": -18.505956079633307,
+        "n": 458
       }
     },
     "byStat": {
@@ -64,24 +64,24 @@
       },
       "ast": {
         "w": 143,
-        "l": 113,
+        "l": 114,
         "p": 0,
-        "u": 24.171823408660785,
-        "n": 256
+        "u": 23.671823408660785,
+        "n": 257
       },
       "reb": {
-        "w": 168,
-        "l": 119,
+        "w": 171,
+        "l": 120,
         "p": 0,
-        "u": 37.90014562940855,
-        "n": 287
+        "u": 38.61188313353183,
+        "n": 291
       },
       "fg3m": {
-        "w": 138,
-        "l": 116,
+        "w": 141,
+        "l": 117,
         "p": 0,
-        "u": 22.906557917705683,
-        "n": 254
+        "u": 26.04498626201638,
+        "n": 258
       },
       "stl": {
         "w": 28,
@@ -92,26 +92,26 @@
       },
       "blk": {
         "w": 14,
-        "l": 9,
+        "l": 11,
         "p": 0,
-        "u": 5.615991151316047,
-        "n": 23
+        "u": 4.115991151316047,
+        "n": 25
       }
     },
     "bySide": {
       "OVER": {
         "w": 422,
-        "l": 381,
+        "l": 382,
         "p": 0,
-        "u": 111.8735594276173,
-        "n": 803
+        "u": 111.3735594276173,
+        "n": 804
       },
       "UNDER": {
-        "w": 349,
-        "l": 249,
+        "w": 355,
+        "l": 253,
         "p": 0,
-        "u": 62.69800246432022,
-        "n": 598
+        "u": 65.04816831275421,
+        "n": 608
       }
     },
     "byEdge": {
@@ -123,32 +123,32 @@
         "n": 60
       },
       "12-18": {
-        "w": 106,
+        "w": 107,
         "l": 66,
         "p": 0,
-        "u": 96.38824918345527,
-        "n": 172
+        "u": 98.0098708050769,
+        "n": 173
       },
       "8-12": {
-        "w": 168,
+        "w": 169,
         "l": 149,
         "p": 0,
-        "u": 20.993816041842212,
-        "n": 317
+        "u": 22.42238747041364,
+        "n": 318
       },
       "5-8": {
-        "w": 307,
-        "l": 240,
+        "w": 311,
+        "l": 244,
         "p": 0,
-        "u": 33.36342509041968,
-        "n": 547
+        "u": 32.663397888660604,
+        "n": 555
       },
       "<5": {
         "w": 152,
-        "l": 153,
+        "l": 154,
         "p": 0,
-        "u": -14.599226211651464,
-        "n": 305
+        "u": -15.099226211651464,
+        "n": 306
       }
     },
     "byBook": {
@@ -160,40 +160,40 @@
         "n": 304
       },
       "DraftKings": {
-        "w": 278,
-        "l": 246,
+        "w": 280,
+        "l": 248,
         "p": 0,
-        "u": 13.472962873615622,
-        "n": 524
+        "u": 13.362119732577613,
+        "n": 528
       },
       "FanDuel": {
         "w": 235,
-        "l": 181,
+        "l": 182,
         "p": 0,
-        "u": 83.33736697630532,
-        "n": 416
+        "u": 82.83736697630532,
+        "n": 417
       },
       "Caesars": {
-        "w": 48,
+        "w": 49,
         "l": 40,
         "p": 0,
-        "u": 15.312910239214467,
-        "n": 88
+        "u": 15.901145533332114,
+        "n": 89
       },
       "BetMGM": {
-        "w": 43,
-        "l": 26,
+        "w": 46,
+        "l": 28,
         "p": 0,
-        "u": 23.413950628922585,
-        "n": 69
+        "u": 25.286724324276925,
+        "n": 74
       }
     },
     "last30": {
-      "w": 771,
-      "l": 630,
+      "w": 777,
+      "l": 635,
       "p": 0,
-      "u": 174.57156189193748,
-      "n": 1401
+      "u": 176.42172774037144,
+      "n": 1412
     },
     "games": {
       "ats": {
@@ -284,6 +284,14 @@
       "p": 0,
       "u": 5.933013759009574,
       "n": 59
+    },
+    {
+      "date": "2026-10-29",
+      "w": 6,
+      "l": 5,
+      "p": 0,
+      "u": 1.8501658484339787,
+      "n": 11
     }
   ],
   "reliability": [
@@ -295,33 +303,33 @@
     },
     {
       "range": "50-55%",
-      "n": 262,
+      "n": 263,
       "predicted": 0.527,
-      "actual": 0.466
+      "actual": 0.464
     },
     {
       "range": "55-60%",
-      "n": 417,
+      "n": 418,
       "predicted": 0.576,
-      "actual": 0.532
+      "actual": 0.531
     },
     {
       "range": "60-65%",
-      "n": 330,
+      "n": 334,
       "predicted": 0.624,
-      "actual": 0.594
+      "actual": 0.599
     },
     {
       "range": "65-70%",
-      "n": 143,
+      "n": 144,
       "predicted": 0.673,
-      "actual": 0.748
+      "actual": 0.75
     },
     {
       "range": "70-75%",
-      "n": 45,
+      "n": 47,
       "predicted": 0.718,
-      "actual": 0.644
+      "actual": 0.638
     },
     {
       "range": "75-80%",
@@ -337,11 +345,11 @@
     }
   ],
   "gameModel": {
-    "n": 68,
-    "maeMargin": 11.792,
-    "maeMarginRaw": 11.836,
-    "maeTotal": 15.82,
-    "maeTotalRaw": 16.113,
+    "n": 71,
+    "maeMargin": 11.686,
+    "maeMarginRaw": 11.728,
+    "maeTotal": 15.566,
+    "maeTotalRaw": 15.846,
     "mktMaeMargin": 11.643,
     "mktMaeTotal": 16
   },
@@ -363,38 +371,38 @@
     {
       "calv": 0,
       "since": null,
-      "n": 1401,
-      "record": "771-630-0",
+      "n": 1412,
+      "record": "777-635-0",
       "winPct": 0.55,
-      "units": 174.572,
+      "units": 176.422,
       "brier": 0.241,
       "avgClv": 0.201
     }
   ],
   "flags": [
-    "Picks the model rated 65-70% won 75% (143 picks): underconfident.",
-    "Picks the model rated 70-75% won 64% (45 picks): overconfident."
+    "Picks the model rated 65-70% won 75% (144 picks): underconfident.",
+    "Picks the model rated 70-75% won 64% (47 picks): overconfident."
   ],
   "calibration": {
-    "version": 0,
-    "updated": null,
+    "version": 1,
+    "updated": "2026-10-30T17:35:06.690Z",
     "current": {
       "W_MARKET_SPREAD": 0.5,
       "W_MARKET_TOTAL": 0.6,
       "PLATT_A": 1,
       "PLATT_B": 0,
-      "PROP_W_MARKET": 0.35,
+      "PROP_W_MARKET": 0.39,
       "SHRINK": {
-        "pts": 0.75,
-        "reb": 0.75,
-        "ast": 0.75,
-        "pra": 0.75,
-        "fg3m": 0.7,
+        "pts": 0.7,
+        "reb": 0.7,
+        "ast": 0.7,
+        "pra": 0.7,
+        "fg3m": 0.65,
         "stl": 0.6,
         "blk": 0.6
       },
-      "MARGIN_SD": 12,
-      "TOTAL_SD": 18
+      "MARGIN_SD": 12.4,
+      "TOTAL_SD": 18.5
     },
     "defaults": {
       "W_MARKET_SPREAD": 0.85,
@@ -432,14 +440,124 @@
       "TOTAL_SD": 18
     },
     "fit": {
-      "updated": "2026-10-29T17:53:01.654Z",
-      "n": {},
+      "updated": "2026-10-30T17:35:06.690Z",
+      "n": {
+        "W_MARKET_SPREAD": 7,
+        "W_MARKET_TOTAL": 7,
+        "PROP_W_MARKET": 1572,
+        "SHRINK.pts": 330,
+        "SHRINK.reb": 333,
+        "SHRINK.ast": 286,
+        "SHRINK.fg3m": 272,
+        "SHRINK.pra": 274,
+        "SHRINK.stl": 50,
+        "SHRINK.blk": 27,
+        "PLATT": 71,
+        "MARGIN_SD": 71,
+        "TOTAL_SD": 71
+      },
       "notes": [
-        "Only 9 graded day(s); 10 needed before any automatic change (one night of games is too correlated to learn from)"
+        "Market weight (spread): 7 of 60 samples needed, unchanged",
+        "Market weight (total): 7 of 60 samples needed, unchanged",
+        "Prop shrink stl: 50 of 150 samples needed, unchanged",
+        "Prop shrink blk: 27 of 150 samples needed, unchanged",
+        "Win-probability calibration: 71 of 150 samples needed, unchanged"
       ]
     }
   },
-  "changeLog": [],
+  "changeLog": [
+    {
+      "version": 1,
+      "date": "2026-10-30",
+      "changes": [
+        {
+          "key": "PROP_W_MARKET",
+          "from": 0.35,
+          "to": 0.39,
+          "target": 0.724,
+          "n": 1572,
+          "est": 0.777,
+          "se": 0.045
+        },
+        {
+          "key": "SHRINK.pts",
+          "from": 0.75,
+          "to": 0.7,
+          "target": 0.44,
+          "n": 330,
+          "est": 0.436,
+          "se": 0.128
+        },
+        {
+          "key": "SHRINK.reb",
+          "from": 0.75,
+          "to": 0.7,
+          "target": 0.537,
+          "n": 333,
+          "est": 0.607,
+          "se": 0.179
+        },
+        {
+          "key": "SHRINK.ast",
+          "from": 0.75,
+          "to": 0.7,
+          "target": 0.231,
+          "n": 286,
+          "est": 0.175,
+          "se": 0.179
+        },
+        {
+          "key": "SHRINK.fg3m",
+          "from": 0.7,
+          "to": 0.65,
+          "target": 0.447,
+          "n": 272,
+          "est": 0.474,
+          "se": 0.2
+        },
+        {
+          "key": "SHRINK.pra",
+          "from": 0.75,
+          "to": 0.7,
+          "target": 0.138,
+          "n": 274,
+          "est": -0.006,
+          "se": 0.136
+        },
+        {
+          "key": "MARGIN_SD",
+          "from": 12,
+          "to": 12.4,
+          "target": 14.013,
+          "n": 71,
+          "est": 15.53
+        },
+        {
+          "key": "TOTAL_SD",
+          "from": 18,
+          "to": 18.5,
+          "target": 18.733,
+          "n": 71,
+          "est": 19.21
+        }
+      ],
+      "n": {
+        "W_MARKET_SPREAD": 7,
+        "W_MARKET_TOTAL": 7,
+        "PROP_W_MARKET": 1572,
+        "SHRINK.pts": 330,
+        "SHRINK.reb": 333,
+        "SHRINK.ast": 286,
+        "SHRINK.fg3m": 272,
+        "SHRINK.pra": 274,
+        "SHRINK.stl": 50,
+        "SHRINK.blk": 27,
+        "PLATT": 71,
+        "MARGIN_SD": 71,
+        "TOTAL_SD": 71
+      }
+    }
+  ],
   "files": [
     "2026-10.json"
   ]

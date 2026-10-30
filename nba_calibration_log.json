@@ -1,0 +1,93 @@
+[
+  {
+    "version": 1,
+    "date": "2026-10-30",
+    "changes": [
+      {
+        "key": "PROP_W_MARKET",
+        "from": 0.35,
+        "to": 0.39,
+        "target": 0.724,
+        "n": 1572,
+        "est": 0.777,
+        "se": 0.045
+      },
+      {
+        "key": "SHRINK.pts",
+        "from": 0.75,
+        "to": 0.7,
+        "target": 0.44,
+        "n": 330,
+        "est": 0.436,
+        "se": 0.128
+      },
+      {
+        "key": "SHRINK.reb",
+        "from": 0.75,
+        "to": 0.7,
+        "target": 0.537,
+        "n": 333,
+        "est": 0.607,
+        "se": 0.179
+      },
+      {
+        "key": "SHRINK.ast",
+        "from": 0.75,
+        "to": 0.7,
+        "target": 0.231,
+        "n": 286,
+        "est": 0.175,
+        "se": 0.179
+      },
+      {
+        "key": "SHRINK.fg3m",
+        "from": 0.7,
+        "to": 0.65,
+        "target": 0.447,
+        "n": 272,
+        "est": 0.474,
+        "se": 0.2
+      },
+      {
+        "key": "SHRINK.pra",
+        "from": 0.75,
+        "to": 0.7,
+        "target": 0.138,
+        "n": 274,
+        "est": -0.006,
+        "se": 0.136
+      },
+      {
+        "key": "MARGIN_SD",
+        "from": 12,
+        "to": 12.4,
+        "target": 14.013,
+        "n": 71,
+        "est": 15.53
+      },
+      {
+        "key": "TOTAL_SD",
+        "from": 18,
+        "to": 18.5,
+        "target": 18.733,
+        "n": 71,
+        "est": 19.21
+      }
+    ],
+    "n": {
+      "W_MARKET_SPREAD": 7,
+      "W_MARKET_TOTAL": 7,
+      "PROP_W_MARKET": 1572,
+      "SHRINK.pts": 330,
+      "SHRINK.reb": 333,
+      "SHRINK.ast": 286,
+      "SHRINK.fg3m": 272,
+      "SHRINK.pra": 274,
+      "SHRINK.stl": 50,
+      "SHRINK.blk": 27,
+      "PLATT": 71,
+      "MARGIN_SD": 71,
+      "TOTAL_SD": 71
+    }
+  }
+]
